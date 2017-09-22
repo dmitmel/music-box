@@ -1,0 +1,11 @@
+#!/usr/bin/env sh
+
+set -e
+
+build_type=$1
+cmake_dir=cmake-build-$(echo "$build_type" | tr '[:upper:]' '[:lower:]')
+
+mkdir -p "$cmake_dir"
+cd "$cmake_dir"
+
+cmake -Wdev -DCMAKE_BUILD_TYPE="$build_type" ..
