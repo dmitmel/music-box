@@ -23,50 +23,89 @@
  */
 
 #include <avr/pgmspace.h>
-#include "scheduler.h"
-#include "player.h"
-#include "timer.h"
-#include "melody.h"
+#include <avr/interrupt.h>
+#include "./scheduler.h"
+#include "./player.h"
+#include "./timer.h"
+#include "./melody.h"
 
 bool scheduler::shouldUpdatePlayingNotes;
 
 void updatePlayingNotes() {
-  static int startI = 0;
-  static time startTime = 0;
-  for (; startI < PACKED_NOTES_LENGTH; ++startI) {
-    uint16_t packedNote = PACKED_NOTE(startI);
-    uint8_t offset = NOTE_OFFSET((packedNote & OFFSET_BITMASK) >> OFFSET_BITOFFSET);
-    uint8_t duration = NOTE_DURATION((packedNote & DURATION_BITMASK) >> DURATION_BITOFFSET);
+//  static int startI = 0;
+//  static time_t startTime = 0;
+//  for (; startI < PACKED_NOTES_LENGTH; ++startI) {
+//    uint16_t packedNote = PACKED_NOTE(startI);
+//    uint8_t offset = NOTE_OFFSET((packedNote & OFFSET_BITMASK) >> OFFSET_BITOFFSET);
+//    uint8_t duration = NOTE_DURATION((packedNote & DURATION_BITMASK) >> DURATION_BITOFFSET);
+//
+//    if (timer::currentTime < startTime + offset + duration) break;
+//    startTime += duration;
+//  }
+//
+//  int endI = startI;
+//  time_t endTime = startTime;
+//  for (; endI < PACKED_NOTES_LENGTH; ++endI) {
+//    uint16_t packedNote = PACKED_NOTE(endI);
+//    uint8_t offset = NOTE_OFFSET((packedNote & OFFSET_BITMASK) >> OFFSET_BITOFFSET);
+//
+//    if (timer::currentTime < endTime + offset) break;
+//    endTime += offset;
+//  }
+//
+//  time_t totalOffset = startTime;
+//  player::playingNotesCount = 0;
+//  for (int i = startI; i < endI && player::playingNotesCount < SIMULTANEOUS_NOTES; i++) {
+//    uint16_t packedNote = PACKED_NOTE(i);
+//    uint8_t offset = NOTE_OFFSET((packedNote & OFFSET_BITMASK) >> OFFSET_BITOFFSET);
+//    uint8_t duration = NOTE_DURATION((packedNote & DURATION_BITMASK) >> DURATION_BITOFFSET);
+//
+//    if (i > startI) totalOffset += offset;
+//
+//    if (totalOffset <= timer::currentTime && timer::currentTime < totalOffset + duration) {
+//      uint8_t key = (packedNote & KEY_BITMASK) >> KEY_BITOFFSET;
+//      uint16_t frequency = NOTE_FREQUENCY(key);
+//      player::displayNoteKey(key);
+//      player::playingNoteFrequencies[player::playingNotesCount] = frequency;
+//      ++player::playingNotesCount;
+//    }
+//  }
 
-    if (timer::currentTime < startTime + offset + duration) break;
-    startTime += duration;
+  static int startIndex;
+  static uint16_t startTime;
+  static uint32_t startDuration = NOTE_DURATION((PACKED_NOTE(startIndex) & DURATION_BITMASK) >> DURATION_BITOFFSET);
+
+  while ((startIndex + 1 < PACKED_NOTES_LENGTH) && (startTime + startDuration <= timer::currentTime)) {
+    startIndex++;
+    packed_note_t packedNote = PACKED_NOTE(startIndex);
+    uint16_t deltaTime = NOTE_OFFSET((packedNote & OFFSET_BITMASK) >> OFFSET_BITOFFSET);
+    startDuration = NOTE_DURATION((packedNote & DURATION_BITMASK) >> DURATION_BITOFFSET);
+    startTime += deltaTime;
   }
 
-  int endI = startI;
-  time endTime = startTime;
-  for (; endI < PACKED_NOTES_LENGTH; ++endI) {
-    uint16_t packedNote = PACKED_NOTE(endI);
-    uint8_t offset = NOTE_OFFSET((packedNote & OFFSET_BITMASK) >> OFFSET_BITOFFSET);
+  static int endIndex;
+  static uint16_t endTime;
 
-    if (timer::currentTime < endTime + offset) break;
-    endTime += offset;
+  while ((endIndex + 1 < PACKED_NOTES_LENGTH) && (endTime <= timer::currentTime)) {
+    endIndex++;
+    packed_note_t packedNote = PACKED_NOTE(endIndex);
+    uint16_t deltaTime = NOTE_OFFSET((packedNote & OFFSET_BITMASK) >> OFFSET_BITOFFSET);
+    endTime += deltaTime;
   }
 
-  time totalOffset = startTime;
+  uint16_t time = startTime;
   player::playingNotesCount = 0;
-  for (int i = startI; i < endI && player::playingNotesCount < SIMULTANEOUS_NOTES; i++) {
-    uint16_t packedNote = PACKED_NOTE(i);
-    uint8_t offset = NOTE_OFFSET((packedNote & OFFSET_BITMASK) >> OFFSET_BITOFFSET);
-    uint8_t duration = NOTE_DURATION((packedNote & DURATION_BITMASK) >> DURATION_BITOFFSET);
-
-    if (i > startI) totalOffset += offset;
-
-    if (totalOffset <= timer::currentTime && timer::currentTime < totalOffset + duration) {
-      uint8_t key = (packedNote & KEY_BITMASK) >> KEY_BITOFFSET;
-      uint16_t frequency = NOTE_FREQUENCY(key);
-      player::displayNoteKey(key);
-      player::playingNoteFrequencies[player::playingNotesCount] = frequency;
-      ++player::playingNotesCount;
+  for (int l = startIndex; l <= endIndex; l++) {
+    packed_note_t packedNote = PACKED_NOTE(l);
+    uint8_t keyIndex = (packedNote & KEY_BITMASK) >> KEY_BITOFFSET;
+    uint16_t keyFreq = NOTE_FREQUENCY(keyIndex);
+    uint16_t deltaTime = NOTE_OFFSET((packedNote & OFFSET_BITMASK) >> OFFSET_BITOFFSET);
+    if (l > startIndex)
+      time += deltaTime;
+    int duration = NOTE_DURATION((packedNote & DURATION_BITMASK) >> DURATION_BITOFFSET);
+    if ((timer::currentTime > time) && (timer::currentTime <= time + duration) &&
+        (player::playingNotesCount < SIMULTANEOUS_NOTES)) {
+      player::addNote(keyIndex, keyFreq);
     }
   }
 }
@@ -74,7 +113,9 @@ void updatePlayingNotes() {
 void scheduler::checkUpdates() {
   if (shouldUpdatePlayingNotes) {
     shouldUpdatePlayingNotes = false;
-    player::resetLEDs();
+    cli();
+    player::clearNotes();
     updatePlayingNotes();
+    sei();
   }
 }

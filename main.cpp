@@ -22,16 +22,16 @@
  * SOFTWARE.
  */
 
-#include <Arduino.h>
-#include "timer.h"
-#include "player.h"
-#include "scheduler.h"
+#include <avr/interrupt.h>
+#include "./timer.h"
+#include "./player.h"
+#include "./scheduler.h"
 
-void setup() {
-  timer::setup();
+int main(void) {
+  sei();
+
   player::setup();
-}
-
-void loop() {
-  scheduler::checkUpdates();
+  timer::setup();
+  for (;;) scheduler::checkUpdates();
+  return 0;
 }

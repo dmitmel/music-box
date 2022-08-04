@@ -25,17 +25,18 @@
 #ifndef MUSIC_BOX_PLAYER_H
 #define MUSIC_BOX_PLAYER_H
 
-#define SIMULTANEOUS_NOTES 8
+#define SIMULTANEOUS_NOTES 9
 
 namespace player {
   extern uint16_t playingNoteFrequencies[SIMULTANEOUS_NOTES];
+  extern uint32_t playingNotePhases[SIMULTANEOUS_NOTES];
   extern uint8_t playingNotesCount;
 
   void setup();
 
-  void resetLEDs();
+  void clearNotes();
 
-  void displayNoteKey(uint8_t key);
+  void addNote(uint8_t key, uint16_t frequency);
 
   void play();
 }

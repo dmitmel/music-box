@@ -22,25 +22,19 @@
  * SOFTWARE.
  */
 
-#ifndef MUSIC_BOX_TIMER_H
-#define MUSIC_BOX_TIMER_H
+#ifndef BITS_H_
+#define BITS_H_
 
-#include <stdint.h>
+#define highByte(x) ((x) >> 8)
+#define lowByte(x) ((x) & 0xFF)
 
-// 2^15=32768 samples per second
-#define SAMPLE_RATE_POW 15
-#define SAMPLE_RATE (1u << SAMPLE_RATE_POW)
-#define HALF_SAMPLE_RATE (SAMPLE_RATE >> 1)
-#define SAMPLE_RATE_MASK (SAMPLE_RATE - 1)
+#define bit(bit) (1 << (bit))
+#define bitmask(bits) (bit(bits)-1)
 
-#define TEMPO_SAMPLES 80
+#define bitRead(value, bit) (((value) >> (bit)) & 1)
+#define bitSet(value, bit) ((value) |= (bit(bit)))
+#define bitClear(value, bit) ((value) &= ~(bit(bit)))
+#define bitToggle(value, bit) ((value) ^= (bit(bit)))
+#define bitWrite(value, bit, bitvalue) (bitvalue ? bitSet(value, bit) : bitClear(value, bit))
 
-typedef uint64_t time_t;
-
-namespace timer {
-  extern time_t currentTime;
-
-  void setup();
-}
-
-#endif  // MUSIC_BOX_TIMER_H
+#endif  // BITS_H_

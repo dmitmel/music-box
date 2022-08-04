@@ -22,45 +22,82 @@
  * SOFTWARE.
  */
 
-#include <Arduino.h>
-#include "player.h"
-#include "timer.h"
-#include "melody.h"
-
-#define FIRST_LED_PIN 2
-#define LED_COUNT 8
-#define BUZZER_PIN 10
+#include <avr/io.h>
+#include "./ports.h"
+#include "./player.h"
+#include "./timer.h"
+#include "./melody.h"
 
 uint16_t player::playingNoteFrequencies[SIMULTANEOUS_NOTES];
-uint32_t playingNotePhases[SIMULTANEOUS_NOTES];
+uint32_t player::playingNotePhases[SIMULTANEOUS_NOTES];
 uint8_t player::playingNotesCount;
 
 void player::setup() {
-  for (uint8_t led = 0; led < LED_COUNT; ++led)
-    pinMode(FIRST_LED_PIN + led, OUTPUT);
-  pinMode(BUZZER_PIN, OUTPUT);
+  SETD(PORTA_D6);
+  SETD(PORTA_D7);
+  SETD(PORTA_D8);
+  SETD(PORTA_D9);
+  SETD(PORTA_D10);
+  SETD(PORTA_D11);
+  SETD(PORTA_D12);
+  SETD(PORTA_D13);
+
+  // Setting up 8-bit timer on port D6
+  TCCR0A = (bit(COM0A0+1)) | (bit(WGM00)) | (bit(WGM01));  // fast PWM, clear OC0 on compare match
+  TCCR0B = (1 << CS00);                                  // no prescaller
 }
 
-void player::resetLEDs() {
-  for (uint8_t led = 0; led < LED_COUNT; ++led)
-    digitalWrite(FIRST_LED_PIN + led, LOW);
+void player::clearNotes() {
+  playingNotesCount = 0;
+  CLRP(PORTA_D7);
+  CLRP(PORTA_D8);
+  CLRP(PORTA_D9);
+  CLRP(PORTA_D10);
+  CLRP(PORTA_D11);
+  CLRP(PORTA_D12);
+  CLRP(PORTA_D13);
 }
 
-void player::displayNoteKey(uint8_t key) {
-  uint8_t led = key * LED_COUNT / PACKED_FREQUENCIES_LENGTH;
-  digitalWrite(FIRST_LED_PIN + LED_COUNT - 1 - led, HIGH);
+void player::addNote(uint8_t key, uint16_t frequency) {
+  playingNoteFrequencies[playingNotesCount] = frequency;
+  playingNotesCount++;
+
+  uint8_t led = key * 7 / PACKED_FREQUENCIES_LENGTH;
+  switch (led) {
+    case 0:
+      SETP(PORTA_D7);
+      break;
+    case 1:
+      SETP(PORTA_D8);
+      break;
+    case 2:
+      SETP(PORTA_D9);
+      break;
+    case 3:
+      SETP(PORTA_D10);
+      break;
+    case 4:
+      SETP(PORTA_D11);
+      break;
+    case 5:
+      SETP(PORTA_D12);
+      break;
+    case 6:
+      SETP(PORTA_D13);
+      break;
+  }
 }
 
 void player::play() {
   uint8_t pmwValue = 0;
 
   for (int i = 0; i < playingNotesCount; i++) {
-    uint32_t freq = playingNoteFrequencies[i];
+    uint16_t freq = playingNoteFrequencies[i];
     uint32_t phase = playingNotePhases[i];
     phase += freq;
     playingNotePhases[i] = phase;
-    pmwValue += (phase & SAMPLE_RATE_MASK) < HALF_SAMPLE_RATE ? 0 : 32;
+    pmwValue += (phase & SAMPLE_RATE_MASK) < HALF_SAMPLE_RATE ? 0 : 60;
   }
 
-  analogWrite(BUZZER_PIN, pmwValue);
+  OCR0A = pmwValue;
 }

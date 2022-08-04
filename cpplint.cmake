@@ -1,19 +1,20 @@
 find_program(CPPLINT cpplint)
 
-set(CPPLINT_LINE_LENGTH 120)
-set(CPPLINT_FILTER
-  -build/header_guard
-  -build/include_subdir
-  -whitespace)
-string(REPLACE ";" "," CPPLINT_FILTER "${CPPLINT_FILTER}")
-
 function(cpplint TARGET_NAME)
-  set(SOURCES_LIST ${ARGN})
-  list(REMOVE_DUPLICATES SOURCES_LIST)
+  set(SRCS ${${TARGET_NAME}_SRCS})
+  set(EXCLUDE ${${TARGET_NAME}_CPPLINT_EXCLUDE})
 
-  if(SOURCES_LIST)
+  foreach(file ${EXCLUDE})
+    LIST(REMOVE_ITEM SRCS "${file}")
+  endforeach()
+
+  set(LINE_LENGTH ${${TARGET_NAME}_CPPLINT_LINE_LENGTH})
+  set(FILTER ${${TARGET_NAME}_CPPLINT_FILTER})
+  string(REPLACE ";" "," FILTER "${FILTER}")
+
+  if(SRCS)
     add_custom_command(TARGET ${TARGET_NAME} POST_BUILD
-      COMMAND ${CPPLINT} --linelength=${CPPLINT_LINE_LENGTH} --filter=${CPPLINT_FILTER} ${SOURCES_LIST}
+      COMMAND ${CPPLINT} --linelength=${LINE_LENGTH} --filter=${FILTER} ${SRCS}
       COMMENT "cpplint: Checking source code style"
       WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
   endif()

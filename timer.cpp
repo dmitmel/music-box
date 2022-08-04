@@ -24,25 +24,19 @@
 
 #include <avr/io.h>
 #include <avr/interrupt.h>
-#include "timer.h"
-#include "scheduler.h"
-#include "player.h"
+#include "./timer.h"
+#include "./scheduler.h"
+#include "./player.h"
 
-time timer::currentTime;
+time_t timer::currentTime;
 
 void timer::setup() {
   // setting up 16-bit timer
-  // CTC mode
-  TCCR2A = 1 << WGM21;
-  // set prescaler to 8
-  TCCR2B = 2 << CS20;
-  // 16,000,000 / 32,768 / 8 = 61
-  OCR2A = F_CPU >> SAMPLE_RATE_POW >> 3;
-  // interrupt on compare
-  TIMSK2 = 1 << OCIE2A;
+  TCCR2A = 1 << WGM21;                    // CTC mode
+  TCCR2B = 2 << CS20;                     // set prescaler to 8
+  OCR2A = F_CPU >> SAMPLE_RATE_POW >> 3;  // 16,000,000 / 32,768 / 8 = 61
+  TIMSK2 = 1 << OCIE2A;                   // interrupt on compare
 }
-
-#define TEMPO_SAMPLES 107
 
 ISR(TIMER2_COMPA_vect) {
   cli();
