@@ -92,3 +92,36 @@ drwxr-xr-x dmitmel/staff     0 2019-04-08 16:42 ./music-box/cmake-build-release/
 drwxr-xr-x dmitmel/staff     0 2019-04-08 16:42 ./music-box/cmake-build-release/CMakeFiles/3.14.0/CompilerIdC/tmp/
 -rw-r--r-- dmitmel/staff  1446 2017-09-18 07:37 ./music-box/melody-generator/.eslintrc.yml
 -rwxr-xr-x dmitmel/staff   608 2017-09-19 07:35 ./music-box/melody-generator/generate.js
+drwxr-xr-x dmitmel/staff     0 2017-10-11 20:29 ./music-box-java-tools/
+-rw-r--r-- dmitmel/staff 89519 2017-09-16 19:06 ./music-box-java-tools/imperial.mid
+-rw-r--r-- dmitmel/staff  7457 2017-09-29 22:32 ./music-box-java-tools/Marble Machine.mid
+-rw-r--r-- dmitmel/staff   423 2017-09-16 19:13 ./music-box-java-tools/musicBox.iml
+-rw-r--r-- dmitmel/staff 68537 2017-09-17 09:58 ./music-box-java-tools/We Are Number One.mid
+-rw-r--r-- dmitmel/staff   352 2017-09-29 22:03 ./music-box-java-tools/happy_birthday_easy.mid
+drwxr-xr-x dmitmel/staff     0 2021-11-27 18:56 ./music-box-java-tools/out/
+drwxr-xr-x dmitmel/staff     0 2017-09-16 19:17 ./music-box-java-tools/out/production/
+drwxr-xr-x dmitmel/staff     0 2017-10-28 08:44 ./music-box-java-tools/out/production/musicBox/
+-rw-r--r-- dmitmel/staff 10568 2017-10-28 08:44 ./music-box-java-tools/out/production/musicBox/MidiParse.class
+-rw-r--r-- dmitmel/staff  1640 2017-10-28 08:44 ./music-box-java-tools/out/production/musicBox/MidiParse$2.class
+-rw-r--r-- dmitmel/staff 10370 2017-09-18 21:28 ./music-box-java-tools/out/production/musicBox/MusicPlay.class
+-rw-r--r-- dmitmel/staff  1640 2017-10-28 08:44 ./music-box-java-tools/out/production/musicBox/MidiParse$1.class
+-rw-r--r-- dmitmel/staff   907 2017-10-28 08:44 ./music-box-java-tools/out/production/musicBox/MidiParse$3.class
+-rw-r--r-- dmitmel/staff  6295 2017-10-11 20:28 ./music-box-java-tools/carol_of_the_bells_nl.mid
+-rw-r--r-- dmitmel/staff 14981 2017-09-29 22:38 ./music-box-java-tools/Wintergatan - Marble Machine.mid
+-rw-r--r-- dmitmel/staff  4227 2017-09-29 22:25 ./music-box-java-tools/Star-Wars-Imperial-March.mid
+-rw-r--r-- dmitmel/staff   480 2017-09-29 21:59 ./music-box-java-tools/happy_birthday.mid
+-rw-r--r-- dmitmel/staff   693 2017-09-29 23:43 ./music-box-java-tools/EPICSaxGuyLoop.mid
+-rw-r--r-- dmitmel/staff  7161 2017-09-16 19:06 ./music-box-java-tools/mario.mid
+-rw-r--r-- dmitmel/staff 10030 2017-09-30 08:48 ./music-box-java-tools/Wintergatan - Sommarfågel.mid
+drwxr-xr-x dmitmel/staff     0 2021-11-27 18:56 ./music-box-java-tools/.idea/
+drwxr-xr-x dmitmel/staff     0 2021-11-27 18:56 ./music-box-java-tools/.idea/markdown-navigator/
+-rw-r--r-- dmitmel/staff   104 2017-09-16 19:13 ./music-box-java-tools/.idea/markdown-navigator/profiles_settings.xml
+-rw-r--r-- dmitmel/staff   159 2017-09-16 19:13 ./music-box-java-tools/.idea/encodings.xml
+drwxr-xr-x dmitmel/staff     0 2021-11-27 18:56 ./music-box-java-tools/.idea/inspectionProfiles/
+-rw-r--r-- dmitmel/staff  1987 2017-09-16 19:13 ./music-box-java-tools/.idea/inspectionProfiles/Project_Default.xml
+-rw-r--r-- dmitmel/staff 29028 2017-12-01 21:24 ./music-box-java-tools/.idea/workspace.xml
+-rw-r--r-- dmitmel/staff   256 2017-09-16 19:13 ./music-box-java-tools/.idea/modules.xml
+-rw-r--r-- dmitmel/staff  4566 2017-09-16 19:13 ./music-box-java-tools/.idea/misc.xml
+drwxr-xr-x dmitmel/staff     0 2017-10-28 08:44 ./music-box-java-tools/src/
+-rw-r--r-- dmitmel/staff  9892 2017-09-16 19:17 ./music-box-java-tools/src/MusicPlay.java
+-rw-r--r-- dmitmel/staff 14000 2018-06-13 21:12 ./music-box-java-tools/src/MidiParse.java
